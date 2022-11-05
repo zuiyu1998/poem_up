@@ -1328,7 +1328,9 @@ checksum = "6ac9a59f73473f1b8d852421e59e64809f025994837ef743615c6d0c5b305160"
 name = "poem_service"
 version = "0.1.0"
 dependencies = [
+ "entity",
  "sea-orm",
+ "thiserror",
 ]
 
 [[package]]

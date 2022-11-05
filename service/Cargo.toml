@@ -7,3 +7,7 @@ edition = "2021"
 
 [dependencies]
 sea-orm = { version = "0.9", features = ["runtime-tokio-native-tls", "sqlx-mysql"] }
+
+entity = { path ="../entity" }
+
+thiserror = { version ="1.0" }
