@@ -1,7 +1,5 @@
-use crate::error::{Error, Result};
-use entity::sea_orm::{
-    ConnectionTrait, DatabaseConnection, EntityTrait, PaginatorTrait, TransactionTrait,
-};
+use crate::error::Result;
+use entity::sea_orm::{DatabaseConnection, EntityTrait, PaginatorTrait, TransactionTrait};
 use entity::users::{ActiveModel, Entity, Model};
 
 #[derive(Debug, Clone, Copy)]
@@ -16,60 +14,60 @@ pub struct UserList {
     pub option: UserListOption,
 }
 
-pub struct UserService {
-    pub conn: &mut DatabaseConnection,
+pub struct UserService<'a> {
+    pub conn: &'a mut DatabaseConnection,
 }
 
-impl UserService {
-    pub fn new(&self, conn: &mut DatabaseConnection) -> Self {
+impl<'a> UserService<'a> {
+    pub fn new(&self, conn: &'a mut DatabaseConnection) -> Self {
         UserService { conn }
     }
 
-    pub fn find(&self, active: &ActiveModel) -> Result<Model> {
+    pub async fn find(&self, active: &ActiveModel) -> Result<Model> {
         let begin = self.conn.begin().await?;
 
-        let res = active.find(&conn).await;
+        let res = active.find(&begin).await;
 
         begin.commit().await?;
 
         res.map_err(|e| e.into())
     }
 
-    pub fn update(&self, active: &ActiveModel) -> Result<Model> {
+    pub async fn update(&self, active: &ActiveModel) -> Result<Model> {
         let begin = self.conn.begin().await?;
 
-        let res = active.update(&conn).await;
+        let res = active.update(&begin).await;
 
         begin.commit().await?;
 
         res.map_err(|e| e.into())
     }
 
-    pub fn create(&self, active: &ActiveModel) -> Result<Model> {
+    pub async fn create(&self, active: &ActiveModel) -> Result<Model> {
         let begin = self.conn.begin().await?;
 
-        let res = active.create(&conn).await;
+        let res = active.create(&begin).await;
 
         begin.commit().await?;
 
         res.map_err(|e| e.into())
     }
 
-    pub fn list(&self, list_option: &UserListOption) -> Result<UserList> {
+    pub async fn list(&self, list_option: &UserListOption) -> Result<UserList> {
         let begin = self.conn.begin().await?;
 
-        let paginate = Entity::find().paginate(&begin, list_option.page_size);
+        let paginate = Entity::find().paginate(&begin, list_option.page_size as usize);
 
         let total = paginate.num_items().await?;
 
-        let data = paginate.fetch_page(list_option.page).await?;
+        let data = paginate.fetch_page(list_option.page as usize).await?;
 
         begin.commit().await?;
 
         Ok(UserList {
             data,
-            total,
-            option,
+            total: total as i32,
+            option: list_option.to_owned(),
         })
     }
 }

@@ -7,6 +7,11 @@
             "label": "debug",
             "type": "shell",
             "command": "cargo run"
+        },
+        {
+            "label": "database init",
+            "type": "shell",
+            "command": "sudo service mysql start"
         }
     ]
 }

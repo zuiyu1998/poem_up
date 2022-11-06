@@ -34,10 +34,10 @@ impl ActiveModel {
                 find_sql.filter(Column::NikeName.eq(self.nike_name.clone().into_value().unwrap()))
         }
 
-        if let Some(model) = find_sql.one(db).await? {
+        if let Some(model) = find_sql.one(conn).await? {
             return Ok(model);
         } else {
-            return Err(Kind::UserNotFound);
+            return Err(Kind::UserNotFound.into());
         }
     }
 
@@ -48,17 +48,22 @@ impl ActiveModel {
     }
 
     pub async fn create<C: ConnectionTrait>(&self, conn: &C) -> Result<Model> {
-        match self.find(conn).await? {
-            Ok(_) => {
-                return Err(Kind::UserExist);
-            }
+        let mut res_model = self.find(conn).await;
+
+        res_model = match res_model {
+            Ok(_) => Err(Kind::UserExist.into()),
+
             Err(e) => {
-                if matches!(e, Kind::UserNotFound) {
-                    self.insert(conn).await
+                if matches!(e, Error::Kind(Kind::UserNotFound)) {
+                    let model = self.clone().insert(conn).await?;
+
+                    Ok(model)
                 } else {
-                    return Err(e);
+                    Err(e)
                 }
             }
         };
+
+        res_model
     }
 }

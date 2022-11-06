@@ -1,4 +1,4 @@
-use sea_orm::DatabaseConnection;
+use entity::sea_orm::DatabaseConnection;
 
 pub mod error;
 pub mod user;
