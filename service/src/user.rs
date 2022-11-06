@@ -1,6 +1,8 @@
 use crate::error::{Error, Result};
+use entity::sea_orm::{
+    ConnectionTrait, DatabaseConnection, EntityTrait, PaginatorTrait, TransactionTrait,
+};
 use entity::users::{ActiveModel, Entity, Model};
-use sea_orm::{ConnectionTrait, DatabaseConnection, EntityTrait, PaginatorTrait, TransactionTrait};
 
 #[derive(Debug, Clone, Copy)]
 pub struct UserListOption {

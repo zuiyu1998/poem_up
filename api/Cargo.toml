@@ -5,5 +5,30 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+
+default = ["debug"]
+
+debug = []
+
 [dependencies]
-anyhow = { version ="1.0" }
+anyhow = { version = "1.0" }
+thiserror = { version = "1.0" }
+
+dotenvy = { version = "0.15" }
+
+figment = { version = "0.10", features = ["env"]}
+
+# 序列化
+serde = { version = "1.0", features = ["derive"] }
+
+tracing-subscriber = { version = "0.3" }
+tracing = { version = "0.1" }
+
+# web框架
+poem = { version = "1.2.33", features = ["static-files"] }
+
+entity = { path ="../entity" }
+
+
+poem_up_service = { path ="../service" }
