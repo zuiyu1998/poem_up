@@ -15,11 +15,11 @@ pub struct UserList {
 }
 
 pub struct UserService<'a> {
-    pub conn: &'a mut DatabaseConnection,
+    pub conn: &'a DatabaseConnection,
 }
 
 impl<'a> UserService<'a> {
-    pub fn new(&self, conn: &'a mut DatabaseConnection) -> Self {
+    pub fn new(conn: &'a DatabaseConnection) -> Self {
         UserService { conn }
     }
 

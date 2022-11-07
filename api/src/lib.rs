@@ -1,10 +1,13 @@
 use crate::error::Result;
 use config::Config;
 use entity::sea_orm::Database;
-use poem::{listener::TcpListener, EndpointExt, Route, Server};
+use poem::{listener::TcpListener, middleware::Tracing, EndpointExt, Server};
 
 pub mod config;
 pub mod error;
+
+pub mod app;
+pub mod users;
 
 pub fn config() -> Result<Config> {
     dotenvy::dotenv().ok();
@@ -25,7 +28,7 @@ pub async fn init() -> anyhow::Result<()> {
 
     let service = poem_up_service::Service::new(conn);
 
-    let app = Route::new().data(service);
+    let app = app::new().data(service).with(Tracing);
     let server = Server::new(TcpListener::bind(format!(
         "{}:{}",
         config.host, config.port

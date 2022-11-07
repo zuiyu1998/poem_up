@@ -12,4 +12,8 @@ impl Service {
     pub fn new(conn: DatabaseConnection) -> Self {
         Service { conn }
     }
+
+    pub fn user(&self) -> user::UserService {
+        user::UserService::new(&self.conn)
+    }
 }
