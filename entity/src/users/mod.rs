@@ -10,6 +10,7 @@ pub struct Model {
     pub id: i32,
     pub nike_name: String,
     pub email: String,
+    #[serde(skip_deserializing)]
     pub password: Vec<u8>,
     pub uid: String,
     pub is_delete: bool,

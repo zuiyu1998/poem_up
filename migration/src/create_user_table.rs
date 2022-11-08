@@ -19,13 +19,13 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Column::NikeName).char_len(20).not_null())
+                    .col(ColumnDef::new(Column::NikeName).char_len(30).not_null())
                     .col(ColumnDef::new(Column::Email).char_len(100).not_null())
                     .col(ColumnDef::new(Column::Password).binary().not_null())
                     .col(ColumnDef::new(Column::Uid).char_len(30).not_null())
                     .col(ColumnDef::new(Column::IsDelete).boolean().not_null())
-                    .col(ColumnDef::new(Column::CreateAt).timestamp().not_null())
-                    .col(ColumnDef::new(Column::UpdateAt).timestamp().not_null())
+                    .col(ColumnDef::new(Column::CreateAt).date_time().not_null())
+                    .col(ColumnDef::new(Column::UpdateAt).date_time().not_null())
                     .to_owned(),
             )
             .await

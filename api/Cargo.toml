@@ -34,3 +34,8 @@ entity = { path ="../entity" }
 poem_up_service = { path ="../service" }
 
 validator = { version = "0.16",  features = ["derive"] }
+
+sha2 = { version = "0.10" }
+
+chrono = { version = "0.4" }
+xid = { version = "1" }

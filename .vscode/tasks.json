@@ -12,6 +12,16 @@
             "label": "database init",
             "type": "shell",
             "command": "sudo service mysql start"
+        },
+        {
+            "label": "database up",
+            "type": "shell",
+            "command": "cd ./migration && cargo run -- up"
+        },
+        {
+            "label": "database down",
+            "type": "shell",
+            "command": "cd ./migration && cargo run -- down"
         }
     ]
 }
