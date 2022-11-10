@@ -1,4 +1,4 @@
-use super::models::UserForm;
+use super::models::{UserForm, UserInfo};
 use crate::Result;
 use entity::sea_orm::Set;
 use poem_up_service::Service;
@@ -12,11 +12,16 @@ pub async fn login(service: &Service, form: UserForm) -> Result<Value> {
 
     let user_service = service.user();
 
-    let model = user_service.find(&active).await?;
+    let user = user_service.find(&active).await?;
+    let invitation_code_service = service.invitation_code();
+
+    let invitation_code = invitation_code_service.find_by_user_id(user.id).await?;
+
+    let user_info = UserInfo::new(&user, &invitation_code);
 
     Ok(json!({
         "code": 200,
-        "data": model,
+        "data": user_info,
     }))
 }
 
@@ -35,10 +40,14 @@ pub async fn create(service: &Service, form: UserForm) -> Result<Value> {
 
     let user_service = service.user();
 
-    let model = user_service.create(&active).await?;
+    let user = user_service.create(&active).await?;
+
+    let invitation_code_service = service.invitation_code();
+
+    invitation_code_service.create_by_user_id(user.id).await?;
 
     Ok(json!({
         "code": 200,
-        "data": model,
+        "data": user,
     }))
 }

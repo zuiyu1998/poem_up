@@ -1,6 +1,7 @@
 use entity::sea_orm::DatabaseConnection;
 
 pub mod error;
+pub mod invitation_codes;
 pub mod user;
 
 #[derive(Debug, Clone)]
@@ -15,5 +16,9 @@ impl Service {
 
     pub fn user(&self) -> user::UserService {
         user::UserService::new(&self.conn)
+    }
+
+    pub fn invitation_code(&self) -> invitation_codes::InvitationCodeService {
+        invitation_codes::InvitationCodeService::new(&self.conn)
     }
 }

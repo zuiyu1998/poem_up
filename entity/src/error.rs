@@ -2,6 +2,10 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum Kind {
+    #[error("InvitationCodeNotFound")]
+    InvitationCodeNotFound,
+    #[error("InvitationCodeExist")]
+    InvitationCodeExist,
     #[error("UserNotFound")]
     UserNotFound,
     #[error("UserExist")]
