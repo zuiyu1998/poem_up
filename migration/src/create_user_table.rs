@@ -19,8 +19,18 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Column::NikeName).char_len(30).not_null())
-                    .col(ColumnDef::new(Column::Email).char_len(100).not_null())
+                    .col(
+                        ColumnDef::new(Column::NikeName)
+                            .char_len(30)
+                            .not_null()
+                            .unique_key(),
+                    )
+                    .col(
+                        ColumnDef::new(Column::Email)
+                            .char_len(100)
+                            .not_null()
+                            .unique_key(),
+                    )
                     .col(ColumnDef::new(Column::Password).binary().not_null())
                     .col(ColumnDef::new(Column::Uid).char_len(30).not_null())
                     .col(ColumnDef::new(Column::IsDelete).boolean().not_null())

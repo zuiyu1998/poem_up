@@ -13,6 +13,7 @@ pub async fn login(service: &Service, form: UserForm) -> Result<Value> {
     let user_service = service.user();
 
     let user = user_service.find(&active).await?;
+
     let invitation_code_service = service.invitation_code();
 
     let invitation_code = invitation_code_service.find_by_user_id(user.id).await?;
@@ -48,6 +49,5 @@ pub async fn create(service: &Service, form: UserForm) -> Result<Value> {
 
     Ok(json!({
         "code": 200,
-        "data": user,
     }))
 }

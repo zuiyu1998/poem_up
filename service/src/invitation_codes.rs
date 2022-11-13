@@ -1,4 +1,5 @@
 use crate::error::Result;
+use entity::chrono::Local;
 use entity::invitation_codes::{ActiveModel, Model};
 use entity::sea_orm::{DatabaseConnection, Set, TransactionTrait};
 
@@ -48,7 +49,7 @@ impl<'a> InvitationCodeService<'a> {
     }
 
     pub async fn find_by_user_id(&self, user_id: i32) -> Result<Model> {
-        let mut active = ActiveModel::default();
+        let mut active: ActiveModel = Default::default();
 
         active.user_id = Set(user_id);
         let begin = self.conn.begin().await?;
@@ -88,10 +89,16 @@ impl<'a> InvitationCodeService<'a> {
     pub async fn create_by_user_id(&self, user_id: i32) -> Result<Model> {
         let invitation_code = get_invitation_code_by_user_id(user_id, 6);
 
-        let mut active = ActiveModel::default();
+        let mut active: ActiveModel = Default::default();
 
         active.user_id = Set(user_id);
         active.invitation_code = Set(invitation_code);
+        active.status = Set(false);
+
+        let now = Local::now();
+
+        active.create_at = Set(now.naive_local());
+        active.update_at = Set(now.naive_local());
 
         self.create(&active).await
     }

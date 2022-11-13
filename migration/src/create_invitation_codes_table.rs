@@ -23,7 +23,8 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(Column::InvitationCode)
                             .char_len(6)
-                            .not_null(),
+                            .not_null()
+                            .unique_key(),
                     )
                     .col(ColumnDef::new(Column::Status).boolean().not_null())
                     .col(ColumnDef::new(Column::CreateAt).date_time().not_null())

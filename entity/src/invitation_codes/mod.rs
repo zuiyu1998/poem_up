@@ -51,9 +51,11 @@ impl ActiveModel {
         let mut res_model = self.find(conn).await;
 
         res_model = match res_model {
-            Ok(_) => Err(Kind::UserExist.into()),
+            Ok(_) => Err(Kind::InvitationCodeExist.into()),
 
             Err(e) => {
+                tracing::error!("error:{}", e);
+
                 if matches!(e, Error::Kind(Kind::InvitationCodeNotFound)) {
                     let model = self.clone().insert(conn).await?;
 
