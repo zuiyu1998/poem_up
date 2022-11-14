@@ -13,6 +13,8 @@ pub struct UserForm {
     pub email: String,
     #[validate(length(min = 8, max = 16))]
     pub password: String,
+    #[validate(length(min = 6, max = 6))]
+    pub code: Option<String>,
 }
 
 impl UserForm {
@@ -22,6 +24,15 @@ impl UserForm {
         let now = Local::now();
 
         let password = super::spawn_password(&self.password);
+
+        let uid = super::uid();
+
+        let nike_name = String::from("uid_") + &uid;
+
+        active.uid = Set(uid);
+        active.nike_name = Set(nike_name);
+
+        active.is_delete = Set(false);
 
         active.password = Set(password);
         active.email = Set(self.email.clone());

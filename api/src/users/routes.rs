@@ -9,6 +9,16 @@ use serde_json::Value;
 
 use super::api;
 
+//用户信息
+#[handler]
+pub async fn info(
+    Data(service): Data<&Service>,
+    Form(form): Form<UserForm>,
+) -> Result<Json<Value>> {
+    let res = api::info(service, form).await?;
+    Ok(Json(res))
+}
+
 //登录
 #[handler]
 pub async fn login(
@@ -29,8 +39,19 @@ pub async fn create(
     Ok(Json(res))
 }
 
+//创建用户
+#[handler]
+pub async fn create_by_code(
+    Data(service): Data<&Service>,
+    Form(form): Form<UserForm>,
+) -> Result<Json<Value>> {
+    let res = api::create_by_code(service, form).await?;
+    Ok(Json(res))
+}
+
 pub fn new() -> impl Endpoint {
     Route::new()
         .at("/create", post(create))
         .at("/login", post(login))
+        .at("/info", post(info))
 }

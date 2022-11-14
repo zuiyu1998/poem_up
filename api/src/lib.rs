@@ -7,6 +7,7 @@ pub mod config;
 pub mod error;
 
 pub mod app;
+pub mod middlewares;
 pub mod users;
 
 pub fn config() -> Result<Config> {

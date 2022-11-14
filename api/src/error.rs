@@ -2,7 +2,12 @@ use poem::error::ResponseError;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
-pub enum Kind {}
+pub enum Kind {
+    #[error("CodeNotFound")]
+    CodeNotFound,
+    #[error("CodeNotValid")]
+    CodeNotValid,
+}
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -37,6 +42,12 @@ impl From<validator::ValidationErrors> for Error {
 impl From<figment::Error> for Error {
     fn from(e: figment::Error) -> Self {
         Error::FigmentError(e)
+    }
+}
+
+impl From<Kind> for Error {
+    fn from(e: Kind) -> Self {
+        Error::Kind(e)
     }
 }
 
