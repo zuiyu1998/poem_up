@@ -39,3 +39,6 @@ sha2 = { version = "0.10" }
 
 chrono = { version = "0.4" }
 xid = { version = "1" }
+
+jwt = { version = "0.16" }
+hmac = { version = "0.12" }

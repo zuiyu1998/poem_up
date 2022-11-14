@@ -1,6 +1,8 @@
 use poem::error::ResponseError;
 use thiserror::Error;
 
+use crate::middlewares::{AuthError, ServiceDbError};
+
 #[derive(Debug, Error)]
 pub enum Kind {
     #[error("CodeNotFound")]
@@ -11,6 +13,10 @@ pub enum Kind {
 
 #[derive(Debug, Error)]
 pub enum Error {
+    #[error("{0}")]
+    ServiceDbError(ServiceDbError),
+    #[error("{0}")]
+    AuthError(AuthError),
     #[error("{0}")]
     Kind(Kind),
     #[error("{0}")]
@@ -48,6 +54,18 @@ impl From<figment::Error> for Error {
 impl From<Kind> for Error {
     fn from(e: Kind) -> Self {
         Error::Kind(e)
+    }
+}
+
+impl From<ServiceDbError> for Error {
+    fn from(e: ServiceDbError) -> Self {
+        Error::ServiceDbError(e)
+    }
+}
+
+impl From<AuthError> for Error {
+    fn from(e: AuthError) -> Self {
+        Error::AuthError(e)
     }
 }
 

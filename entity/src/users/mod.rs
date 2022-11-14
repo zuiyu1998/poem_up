@@ -33,6 +33,8 @@ impl ActiveModel {
         } else if self.nike_name.is_set() {
             find_sql =
                 find_sql.filter(Column::NikeName.eq(self.nike_name.clone().into_value().unwrap()))
+        } else if self.email.is_set() {
+            find_sql = find_sql.filter(Column::Email.eq(self.email.clone().into_value().unwrap()))
         }
 
         if let Some(model) = find_sql.one(conn).await? {

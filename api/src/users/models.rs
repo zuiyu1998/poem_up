@@ -25,13 +25,6 @@ impl UserForm {
 
         let password = super::spawn_password(&self.password);
 
-        let uid = super::uid();
-
-        let nike_name = String::from("uid_") + &uid;
-
-        active.uid = Set(uid);
-        active.nike_name = Set(nike_name);
-
         active.is_delete = Set(false);
 
         active.password = Set(password);
