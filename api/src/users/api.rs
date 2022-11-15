@@ -10,9 +10,12 @@ pub async fn login(service: &Service, form: UserForm) -> Result<Value> {
 
     let active = form.into_active_model();
 
-    let user_service = service.user();
+    let transaction = service.transaction().await?;
+
+    let user_service = transaction.user();
 
     let user = user_service.find(&active).await?;
+    transaction.commit().await?;
 
     let token = encode(&user.uid)?;
 
@@ -26,14 +29,16 @@ pub async fn info(service: &Service, form: UserForm) -> Result<Value> {
     form.validate()?;
 
     let active = form.into_active_model();
+    let transaction = service.transaction().await?;
 
-    let user_service = service.user();
+    let user_service = transaction.user();
 
     let user = user_service.find(&active).await?;
 
-    let invitation_code_service = service.invitation_code();
+    let invitation_code_service = transaction.invitation_code();
 
     let invitation_code = invitation_code_service.find_by_user_id(user.id).await?;
+    transaction.commit().await?;
 
     let user_info = UserInfo::new(&user, &invitation_code);
 
@@ -49,8 +54,9 @@ pub async fn create_by_code(service: &Service, form: UserForm) -> Result<Value> 
     if form.code.is_none() {
         return Err(Kind::CodeNotFound.into());
     }
+    let transaction = service.transaction().await?;
 
-    let invitation_code_service = service.invitation_code();
+    let invitation_code_service = transaction.invitation_code();
 
     let mut active = invitation_codes::ActiveModel::default();
     active.invitation_code = Set(form.code.clone().unwrap());
@@ -68,9 +74,10 @@ pub async fn create_by_code(service: &Service, form: UserForm) -> Result<Value> 
     active.uid = Set(uid);
     active.nike_name = Set(nike_name);
 
-    let user_service = service.user();
+    let user_service = transaction.user();
 
     user_service.create(&active).await?;
+    transaction.commit().await?;
 
     Ok(json!({
         "code": 200,
@@ -89,14 +96,16 @@ pub async fn create(service: &Service, form: UserForm) -> Result<Value> {
     active.nike_name = Set(nike_name);
 
     active.is_delete = Set(false);
+    let transaction = service.transaction().await?;
 
-    let user_service = service.user();
+    let user_service = transaction.user();
 
     let user = user_service.create(&active).await?;
 
-    let invitation_code_service = service.invitation_code();
+    let invitation_code_service = transaction.invitation_code();
 
     invitation_code_service.create_by_user_id(user.id).await?;
+    transaction.commit().await?;
 
     Ok(json!({
         "code": 200,

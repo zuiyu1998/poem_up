@@ -60,8 +60,11 @@ impl<E> ServiceDbImpl<E> {
         let mut active = ActiveModel::default();
         active.uid = Set(uid);
 
-        let user_service = service.user();
+        let transaction = service.transaction().await?;
+
+        let user_service = transaction.user();
         let user = user_service.find(&active).await?;
+        transaction.commit().await?;
 
         Ok(user)
     }

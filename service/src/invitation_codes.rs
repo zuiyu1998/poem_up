@@ -1,7 +1,7 @@
 use crate::error::Result;
 use entity::chrono::Local;
 use entity::invitation_codes::{ActiveModel, Model};
-use entity::sea_orm::{DatabaseConnection, Set, TransactionTrait};
+use entity::sea_orm::{ConnectionTrait, DatabaseConnection, Set, TransactionTrait};
 
 const INVITATION_CHARS: [char; 60] = [
     '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'I', 'j',
@@ -29,21 +29,17 @@ pub fn get_invitation_code_by_user_id(user_id: i32, len: usize) -> String {
     String::from_utf8_lossy(&code).to_string()
 }
 
-pub struct InvitationCodeService<'a> {
-    pub conn: &'a DatabaseConnection,
+pub struct InvitationCodeService<'a, C> {
+    pub conn: &'a C,
 }
 
-impl<'a> InvitationCodeService<'a> {
-    pub fn new(conn: &'a DatabaseConnection) -> Self {
+impl<'a, C: ConnectionTrait> InvitationCodeService<'a, C> {
+    pub fn new(conn: &'a C) -> Self {
         InvitationCodeService { conn }
     }
 
     pub async fn find(&self, active: &ActiveModel) -> Result<Model> {
-        let begin = self.conn.begin().await?;
-
-        let res = active.find(&begin).await;
-
-        begin.commit().await?;
+        let res = active.find(self.conn).await;
 
         res.map_err(|e| e.into())
     }
@@ -52,11 +48,8 @@ impl<'a> InvitationCodeService<'a> {
         let mut active: ActiveModel = Default::default();
 
         active.user_id = Set(user_id);
-        let begin = self.conn.begin().await?;
 
-        let res = active.find(&begin).await;
-
-        begin.commit().await?;
+        let res = active.find(self.conn).await;
 
         res.map_err(|e| e.into())
     }
@@ -67,21 +60,13 @@ impl<'a> InvitationCodeService<'a> {
     }
 
     pub async fn update(&self, active: &ActiveModel) -> Result<Model> {
-        let begin = self.conn.begin().await?;
-
-        let res = active.update(&begin).await;
-
-        begin.commit().await?;
+        let res = active.update(self.conn).await;
 
         res.map_err(|e| e.into())
     }
 
     pub async fn create(&self, active: &ActiveModel) -> Result<Model> {
-        let begin = self.conn.begin().await?;
-
-        let res = active.create(&begin).await;
-
-        begin.commit().await?;
+        let res = active.create(self.conn).await;
 
         res.map_err(|e| e.into())
     }
