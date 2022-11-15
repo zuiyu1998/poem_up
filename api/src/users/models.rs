@@ -8,6 +8,22 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
+pub struct UserNikeNameUpdate {
+    #[validate(length(min = 1, max = 30))]
+    pub nike_name: String,
+}
+
+impl UserNikeNameUpdate {
+    pub fn into_active_model(&self) -> ActiveModel {
+        let mut active: ActiveModel = Default::default();
+
+        active.nike_name = Set(self.nike_name.to_owned());
+
+        active
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct UserForm {
     #[validate(email, length(min = 10, max = 100))]
     pub email: String,

@@ -1,9 +1,35 @@
-use super::models::{UserForm, UserInfo};
+use super::models::{UserForm, UserInfo, UserNikeNameUpdate};
 use crate::{error::Kind, middlewares::service::encode, Result};
-use entity::{invitation_codes, sea_orm::Set};
+use entity::{invitation_codes, sea_orm::Set, users::Model as User};
 use poem_up_service::Service;
 use serde_json::{json, Value};
 use validator::Validate;
+
+pub async fn update_nike_name(
+    service: &Service,
+    user: &User,
+    user_password_update: UserNikeNameUpdate,
+) -> Result<Value> {
+    user_password_update.validate()?;
+    if user_password_update.nike_name == user.nike_name {
+        return Err(Kind::NikeNameExists)?;
+    }
+
+    let transaction = service.transaction().await?;
+
+    let mut active = user_password_update.into_active_model();
+
+    let user_service = transaction.user();
+
+    active.id = Set(user.id);
+
+    user_service.update(&active).await?;
+    transaction.commit().await?;
+
+    Ok(json!({
+        "code": 200,
+    }))
+}
 
 pub async fn login(service: &Service, form: UserForm) -> Result<Value> {
     form.validate()?;
@@ -17,6 +43,10 @@ pub async fn login(service: &Service, form: UserForm) -> Result<Value> {
     let user = user_service.find(&active).await?;
     transaction.commit().await?;
 
+    if !active.password.eq(&Set(user.password)) {
+        return Err(Kind::PasswordError)?;
+    }
+
     let token = encode(&user.uid)?;
 
     Ok(json!({
@@ -25,15 +55,8 @@ pub async fn login(service: &Service, form: UserForm) -> Result<Value> {
     }))
 }
 
-pub async fn info(service: &Service, form: UserForm) -> Result<Value> {
-    form.validate()?;
-
-    let active = form.into_active_model();
+pub async fn info(service: &Service, user: &User) -> Result<Value> {
     let transaction = service.transaction().await?;
-
-    let user_service = transaction.user();
-
-    let user = user_service.find(&active).await?;
 
     let invitation_code_service = transaction.invitation_code();
 

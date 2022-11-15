@@ -1,5 +1,5 @@
 use crate::error::Result;
-use entity::sea_orm::{ConnectionTrait, EntityTrait};
+use entity::sea_orm::ConnectionTrait;
 use entity::users::{ActiveModel, Model};
 
 pub struct UserService<'a, C> {

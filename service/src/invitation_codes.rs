@@ -1,7 +1,7 @@
 use crate::error::Result;
 use entity::chrono::Local;
 use entity::invitation_codes::{ActiveModel, Model};
-use entity::sea_orm::{ConnectionTrait, DatabaseConnection, Set, TransactionTrait};
+use entity::sea_orm::{ConnectionTrait, Set};
 
 const INVITATION_CHARS: [char; 60] = [
     '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'I', 'j',

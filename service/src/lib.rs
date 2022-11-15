@@ -1,4 +1,4 @@
-use crate::error::{Error, Result};
+use crate::error::Result;
 use entity::sea_orm::{DatabaseConnection, DatabaseTransaction, TransactionTrait};
 use invitation_codes::InvitationCodeService;
 use user::UserService;

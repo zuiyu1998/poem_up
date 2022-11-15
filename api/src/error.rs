@@ -9,6 +9,10 @@ pub enum Kind {
     CodeNotFound,
     #[error("CodeNotValid")]
     CodeNotValid,
+    #[error("PasswordError")]
+    PasswordError,
+    #[error("NikeNameExists")]
+    NikeNameExists,
 }
 
 #[derive(Debug, Error)]

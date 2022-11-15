@@ -18,11 +18,11 @@ pub enum AuthError {
 }
 
 #[derive(Debug, Clone)]
-pub struct Auth<S> {
+pub struct Auth<S: Clone> {
     _marker: PhantomData<S>,
 }
 
-impl<S> Auth<S> {
+impl<S: Clone> Auth<S> {
     pub fn new() -> Self {
         Auth {
             _marker: PhantomData::default(),
@@ -43,6 +43,7 @@ impl<S: Schema, E: Endpoint> Middleware<E> for Auth<S> {
 
 pub struct Token(pub String);
 
+#[derive(Debug, Clone)]
 pub struct Bearer;
 
 impl Schema for Bearer {
@@ -51,7 +52,7 @@ impl Schema for Bearer {
     }
 }
 
-pub trait Schema: 'static + Send + Sync {
+pub trait Schema: 'static + Send + Sync + Clone {
     fn header_name() -> HeaderName {
         header::AUTHORIZATION
     }

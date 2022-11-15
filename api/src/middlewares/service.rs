@@ -9,6 +9,7 @@ use sha2::Sha256;
 
 use poem_up_service::Service;
 use thiserror::Error;
+use tracing::info;
 
 use crate::error::Result;
 
@@ -84,6 +85,8 @@ impl<E: Endpoint> Endpoint for ServiceDbImpl<E> {
 }
 
 pub fn encode(raw: &str) -> Result<String> {
+    info!("encode raw str: {:?}", raw);
+
     let claims = RegisteredClaims {
         issuer: Some("up.com".into()),
         subject: Some(raw.into()),
@@ -99,8 +102,10 @@ pub fn encode(raw: &str) -> Result<String> {
 }
 
 pub fn decode(token: &str) -> Result<String> {
+    info!("decode token : {:?}", token);
+
     let key: Hmac<Sha256> =
-        Hmac::new_from_slice(b"secret_key").map_err(|_e| ServiceDbError::InvalidKey)?;
+        Hmac::new_from_slice(b"poem_up_secret_key").map_err(|_e| ServiceDbError::InvalidKey)?;
     let claims: RegisteredClaims =
         VerifyWithKey::verify_with_key(token, &key).map_err(|_e| ServiceDbError::ParseFailed)?;
 
