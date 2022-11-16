@@ -1,7 +1,8 @@
 use crate::error::Result;
 use entity::chrono::Local;
 use entity::invitation_codes::{ActiveModel, Model};
-use entity::sea_orm::{ConnectionTrait, Set};
+use entity::invitation_record::{InvitationRecord, Model as InvitationRecordModel};
+use entity::sea_orm::{ConnectionTrait, IntoActiveModel, Set};
 
 const INVITATION_CHARS: [char; 60] = [
     '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'I', 'j',
@@ -86,5 +87,17 @@ impl<'a, C: ConnectionTrait> InvitationCodeService<'a, C> {
         active.update_at = Set(now.naive_local());
 
         self.create(&active).await
+    }
+
+    pub async fn create_invitation_record(
+        &self,
+        user_id: i32,
+        code: &str,
+    ) -> Result<InvitationRecordModel> {
+        let active = InvitationRecord::new(user_id, code).into_active_model();
+
+        let res = active.create(self.conn).await?;
+
+        Ok(res)
     }
 }

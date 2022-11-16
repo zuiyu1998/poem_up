@@ -10,6 +10,12 @@ pub enum Kind {
     UserNotFound,
     #[error("UserExist")]
     UserExist,
+    #[error("DynamicNotFound")]
+    DynamicNotFound,
+    #[error("InvitationRecordNotFound")]
+    InvitationRecordNotFound,
+    #[error("InvitationRecordExist")]
+    InvitationRecordExist,
 }
 
 #[derive(Debug, Error)]

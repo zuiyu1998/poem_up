@@ -127,7 +127,11 @@ pub async fn create(service: &Service, form: UserForm) -> Result<Value> {
 
     let invitation_code_service = transaction.invitation_code();
 
-    invitation_code_service.create_by_user_id(user.id).await?;
+    let user = invitation_code_service.create_by_user_id(user.id).await?;
+    invitation_code_service
+        .create_invitation_record(user.id, &form.code.unwrap())
+        .await?;
+
     transaction.commit().await?;
 
     Ok(json!({
